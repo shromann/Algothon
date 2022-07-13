@@ -6,20 +6,22 @@ from math import log, exp
 nInst = 100
 
 position = np.zeros(nInst, int)
-long = {}
-short = {}
 
-mrWindow = 8
+
+mrWindow = 9
 width = 1
 
 TEN_K = 10000
+comm = 0.0025
 
 holdings = np.array([{} for _ in range(nInst)])
 
+moveRange = {k:(0, 0) for k in range(nInst)}
+
 def getMyPosition(price):
     global position
-
-    position += delta(price)
+    delta(price)
+    position[1:] = 0
     return position
 
 def delta(price):
@@ -29,9 +31,6 @@ def delta(price):
     # currPrice: the current price, can buy or sell
     currPrice = price.iloc[-1]
 
-    # posChange: the netChange we want to make to our current position 
-    posChange = np.zeros(nInst, int)
-
     # days: days passed (incl today) thus far 
     days  = price.__len__()
 
@@ -39,7 +38,7 @@ def delta(price):
 
     # don't trade prior to mrReversion window days
     if days < mrWindow + 1:
-        return posChange
+        return
     
     LD = price.iloc[-mrWindow-1:].applymap(log).diff().dropna()
     LDHist = LD.iloc[:-1]
@@ -48,88 +47,76 @@ def delta(price):
     LB, UB = MLD - (width * SLD), MLD + (width * SLD)
     lastPrice = price.iloc[-2]
 
-    MLD = MLD.map(exp) * lastPrice
-    LB = LB.map(exp)   * lastPrice
-    UB = UB.map(exp)   * lastPrice
-
     # Run LDMR 
-    posChange += MeanReversion(currPrice, MLD, LB, UB)
+    MeanReversion(currPrice, lastPrice, MLD, LB, UB)
     
 
     # TODO: testing purposes (remove to run the whole thing)
-    if days == 20:
-        exit(1)
+    # if days == 200:
+    #     exit(1)
 
 
-    return posChange
-
-
-
-def MeanReversion(currPrice, MLD, LB, UB):
+def MeanReversion(currPrice, lastPrice, MLD, LB, UB):
     """
     Simple Model
     """
-    # open_trades
+    global moveRange
+    global position
+    
+    LBP = LB.map(exp)   * lastPrice
+    UBP = UB.map(exp)   * lastPrice
+
+    realizedMove = currPrice.map(log) - lastPrice.map(log)
+    moveRange = {k:(min(moveRange[k][0], realizedMove[k]), max(moveRange[k][1], realizedMove[k])) for k in range(nInst)}
+    reversion = ((2 * MLD) - realizedMove).map(exp)
+    
+    moveRangeDf = pd.DataFrame(moveRange).applymap(exp).T
+    optOpenValue = abs(((TEN_K) / abs(moveRangeDf[1] - moveRangeDf[0])) * (reversion - 1))
+    
+
     def open_trades(currPrice, long, short):
         global position
         currWorth = position * currPrice
-        buy, sell = ((TEN_K - currWorth[long]) / currPrice[long]).map(int), ((TEN_K + currWorth[short]) / currPrice[short]).map(int)
+                    
+        buySpace, sellSpace = TEN_K - currWorth[long], TEN_K + currWorth[short]
         
+        buy = (pd.concat([optOpenValue[long], buySpace]).min() / currPrice[long]).map(int)
+        sell = (pd.concat([optOpenValue[short], sellSpace]).min() / currPrice[short]).map(int)
+                
         position[long] += buy
         position[short] -= sell
 
-
-        # update Open Holdings
         for i in buy.index:
             holdings[i].update({currPrice[i]:buy[i]})
         
         for i in sell.index:
             holdings[i].update({currPrice[i]:-sell[i]})
 
-        return buy, sell
-        
     # close_trades
     def close_trades(currPrice):
         global position
         global holdings
         
-        newHoldings = [hold.copy() for hold in holdings]
+        newHoldings = [hold.copy() for hold in holdings]        
 
         for i, hold in enumerate(holdings):
             for price, qty in hold.items():
-                if (qty > 0 and currPrice[i] > price) or (qty < 0 and currPrice[i] < price):
+                if (qty > 0 and (currPrice[i] * (1 - comm)) > (price * (1 + comm))) or (qty < 0 and (currPrice[i] * (1 + comm)) < (price * (1 - comm))):
                     position[i] -= qty
                     del newHoldings[i][price]
                 else:
                     continue
 
+
         holdings = newHoldings
 
-
-
-    posChange = np.zeros(nInst, int)
+    longBoundary, shortBoundary = (1 + comm) / (1 - comm), (1 - comm) / (1 + comm)
     
-    long, short = currPrice < LB, currPrice > UB
+    long, short = (currPrice < LBP) & (reversion > longBoundary), (currPrice > UBP) & (reversion < shortBoundary)
 
-    open_trades(currPrice, long, short)
+
     close_trades(currPrice)
+    open_trades(currPrice, long, short)
 
-
-    # ==== DEBUG ZONE
-
-
-    # print(position)    
-
-    i = 10
-    print(holdings[i])
-    print(position[i], currPrice[i])
-    if currPrice[i] < LB[i]:
-        print('buy')
-    elif currPrice[i] > UB[i]:
-        print('sell')
-    else:
-        print('hold')
-
-    return posChange
-
-
+    if longBoundary < reversion[0] or reversion[0] < shortBoundary:
+        print(holdings[0], currPrice[0], position[0])

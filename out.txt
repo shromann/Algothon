@@ -1,0 +1,56 @@
+Loaded 100 instruments for 250 days
+Day 1 value: 0.00 todayPL: $0.00 $-traded: 0 return: 0.00000
+Day 2 value: 0.00 todayPL: $0.00 $-traded: 0 return: 0.00000
+Day 3 value: 0.00 todayPL: $0.00 $-traded: 0 return: 0.00000
+Day 4 value: 0.00 todayPL: $0.00 $-traded: 0 return: 0.00000
+Day 5 value: 0.00 todayPL: $0.00 $-traded: 0 return: 0.00000
+Day 6 value: 0.00 todayPL: $0.00 $-traded: 0 return: 0.00000
+Day 7 value: 0.00 todayPL: $0.00 $-traded: 0 return: 0.00000
+Day 8 value: 0.00 todayPL: $0.00 $-traded: 0 return: 0.00000
+{22.27: -449}
+-449 22.27
+sell
+Day 9 value: -898.64 todayPL: $-898.64 $-traded: 359455 return: -0.00250
+{22.27: -449, 22.41: 2}
+-447 22.41
+sell
+Day 10 value: -2461.58 todayPL: $-1562.94 $-traded: 789722 return: -0.00312
+{22.27: -449}
+-449 22.48
+hold
+Day 11 value: -3858.43 todayPL: $-1396.85 $-traded: 1170331 return: -0.00330
+{22.27: -449, 22.63: 7}
+-442 22.63
+sell
+Day 12 value: -5440.46 todayPL: $-1582.03 $-traded: 1700219 return: -0.00320
+{22.27: -449, 22.63: 7}
+-442 22.59
+hold
+Day 13 value: -7433.30 todayPL: $-1992.84 $-traded: 2141257 return: -0.00347
+{22.27: 891, 22.63: 7}
+449 22.27
+buy
+Day 14 value: -8600.72 todayPL: $-1167.42 $-traded: 2721201 return: -0.00316
+{22.27: 891, 22.63: 7}
+449 22.11
+hold
+Day 15 value: -10457.74 todayPL: $-1857.01 $-traded: 3311415 return: -0.00316
+{22.63: 7, 22.33: -896}
+-1338 22.33
+sell
+Day 16 value: -12157.21 todayPL: $-1699.47 $-traded: 4021271 return: -0.00302
+{22.63: 7, 22.33: -896}
+-1338 22.4
+hold
+Day 17 value: -14034.89 todayPL: $-1877.69 $-traded: 4591213 return: -0.00306
+{22.63: 7}
+-442 22.26
+hold
+Day 18 value: -15929.82 todayPL: $-1894.93 $-traded: 5003040 return: -0.00318
+{22.63: 7}
+-442 22.19
+hold
+Day 19 value: -16942.23 todayPL: $-1012.42 $-traded: 5683762 return: -0.00298
+{22.63: 7}
+-442 22.19
+hold

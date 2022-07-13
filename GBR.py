@@ -70,3 +70,22 @@
 #     record = insert_row(record, pred, 250)
 #     record.to_csv('backtest1.csv', index=False)
 #     return pred
+
+
+    # def open_trades(currPrice, long, short):
+    #     global position
+    #     currWorth = position * currPrice
+
+    #     # smth wrong wid this
+    #     buy, sell = ((TEN_K - currWorth[long]) / currPrice[long]).map(int), ((TEN_K + currWorth[short]) / currPrice[short]).map(int)
+        
+    #     position[long] += buy
+    #     position[short] -= sell
+
+
+    #     # update Open Holdings
+    #     for i in buy.index:
+    #         holdings[i].update({currPrice[i]:buy[i]})
+        
+    #     for i in sell.index:
+    #         holdings[i].update({currPrice[i]:-sell[i]})
