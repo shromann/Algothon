@@ -21,7 +21,6 @@ moveRange = {k:(0, 0) for k in range(nInst)}
 def getMyPosition(price):
     global position
     delta(price)
-    position[1:] = 0
     return position
 
 def delta(price):
