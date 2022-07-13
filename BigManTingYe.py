@@ -117,5 +117,3 @@ def MeanReversion(currPrice, lastPrice, MLD, LB, UB):
     close_trades(currPrice)
     open_trades(currPrice, long, short)
 
-    if longBoundary < reversion[0] or reversion[0] < shortBoundary:
-        print(holdings[0], currPrice[0], position[0])
